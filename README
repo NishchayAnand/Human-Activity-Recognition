@@ -1,0 +1,71 @@
+Activity Recognition from a Single Chest-Mounted Accelerometer
+	
+Abstract: The dataset collects data from a wearable accelerometer mounted on the chest. Uncalibrated Accelerometer Data are collected from 15 participants performing 7 activities. The dataset is intended for Activity Recognition research purposes. It provides challenges for identification and authentication of people using motion patterns.
+
+Labels are codified by numbers
+       --- 1: Working at Computer
+       --- 2: Standing Up, Walking and Going up\down stairs
+       --- 3: Standing
+       --- 4: Walking
+       --- 5: Going Up\Down Stairs
+       --- 6: Walking and Talking with Someone
+       --- 7: Talking while Standing
+
+The project can be divided into 3 parts:
+* Data Preparation and EDA (Exploratory Data Analysis)
+* Model Selection and Preparation
+* Hyper parameter optimization
+
+General Discussion (Reasons for selecting Deep Learning Algorithms)
+ 
+* It is a challenging problem as there are no obvious or direct ways to relate the recorded accelerometer data to specific human activities and each subject may perform an activity with significant variation, resulting in variations in the recorded accelerometer data.
+
+* Traditionally, methods from the field of signal processing were used to analyze and distill the collected accelerometer data. Such methods require feature engineering, creating domain-specific, sensor-specific, or signal processing-specific features and views of the original data. Statistical and machine learning models were then trained on the processed version of the data.
+
+* A limitation of traditional approach is the signal processing and domain expertise required to analyze the raw data and engineer the features required to fit a model.  This expertise would be required for each new dataset or sensor modality. In essence, it is expensive and not scalable.
+
+* Recently, deep neural network models have started delivering on their promises of feature learning and are achieving state-of-the-art results for human activity recognition. 
+* They are capable of performing automatic feature learning from the raw sensor data and out-perform models fit on hand-crafted domain-specific features.
+
+Data Preparation and EDA 
+
+* Removing activities with relatively fewer observations would be wise, or result in a fairer evaluation of predictive methods (e.g. activities 0, 2, and 6).
+* Perhaps rebalancing the activities by oversampling under-represented activities or under-sampling over-represented activities in a training dataset may help with modeling.
+
+* Standardizing the data per subject will almost certainly be required for any cross-subject model. 
+
+* It is important that the data are exposed to the model while maintaining the temporal ordering of the observations (dataset should not be shuffled w.r.t each subject).
+
+* The rebalancing of the dataset w.r.t each subject avoids any issues 
+* The input dataset should be divided into windows of signals, where a given window may have one to a few seconds of observation data. This is often called a ‘sliding window.’
+
+* The dataset is recorded at 52 Hz, which means that there will be 52 rows of data for one second of elapsed time performing an activity.
+ 
+* We chose to have one window of data represent 2.5 second of data; that means 130 rows of data for a 52 Hz sensor. 
+
+* Each of the subject’s dataset is divided into certain number of windows where a single window of data represents a 2-dimensional array with 130 time steps and three features.
+
+* The splitting of the stream of sensor data into windows may result in windows that miss the transition of one activity to another. 
+
+* Therefore, we split the dataset into windows with an overlap such that the first half of the window contained the observations from the last half of the previous window. 
+
+* Each of the subject’s processed data was merged into a single dataset and then split into training (70%) and testing (30%) data using sklearn train_test_split() function. 
+
+Model Selection and Preparation 
+
+* The feature extraction and model building procedures are often performed simultaneously in the deep learning models. 
+
+* The features can be learned automatically through the network instead of being manually designed. 
+
+* The deep neural network can also extract high-level representation in deep layer, which makes it more suitable for complex activity recognition tasks. 
+
+* In the adoption of neural network models, the use of overlaps, such as a 50% overlap, will double the size of the training data, which may aid in modeling smaller datasets.
+* RNN and LSTM are recommended to recognize short activities that have natural order while CNN is better at inferring long term repetitive activities. 
+
+* The CNN model learns to map a given window of signal data to an activity where the model reads across each window of data and prepares an internal representation of the window.
+
+* CNN is more capable of learning deep features contained in recursive patterns making it a better choice for modeling Human Activity Recognition problem.
+
+* CNN model is prepared using Tensorflow Keras library and was able to provide an accuracy of 85%.
+
+* Increasing the size of the dataset and performing some hyper-parameter optimization may increase the performance of our model.
